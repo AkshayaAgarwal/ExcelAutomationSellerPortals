@@ -1,0 +1,77 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Logs
+*.log
+logs/
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build output
+dist/
+build/
+out/
+*.class
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Misc
+*.bak
+*.tmp
+.cache/
+
+# Secrets / credentials
+gmail_credentials.json
+gmail_token.pickle
+*.pickle
+credentials.json
+token.json
+token.pickle
+client_secret*.json
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# API keys / config with secrets
+config.json
+secrets.json
+*.key
+*.pem
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.egg-info/
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea / 
+
+ 
