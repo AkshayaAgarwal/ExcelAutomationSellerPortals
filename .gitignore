@@ -74,4 +74,13 @@ venv/
 .vscode/
 .idea / 
 
- 
+# Images
+*.jpg
+*.jpeg
+
+# Excel
+*.xlsx
+*.xls
+~$*.xlsx
+~$*.xls
+.xlsx 
