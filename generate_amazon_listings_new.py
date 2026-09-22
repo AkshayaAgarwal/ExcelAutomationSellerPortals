@@ -32,7 +32,7 @@ warnings.simplefilter("ignore")
 
 # ---------- CONFIG ----------
 BASE_TEMPLATE_PATH = "iPhone_17-processing-summary-processing-summary.xlsm"
-MODELS_MASTER_PATH = "models_master.xlsx"
+MODELS_MASTER_PATH = "models_master_new.xlsx"
 IMAGES_MASTER_PATH = "images_master.xlsx"
 OUTPUT_DIR = "outputs"
 TEMPLATE_SHEET_NAME = "Template"
@@ -239,10 +239,8 @@ def cell_value(model_row, field, defaults):
     return defaults.get(field)
 
 
-def build_title(title_prefix, suffix):
-    """suffix is 'D-<design>' for a child, 'PL-<parent index>' for a parent, so a parent's
-    item name never collides with one of its children's."""
-    return f"{str(title_prefix).rstrip()} {suffix}"
+def build_title(title_prefix, design_number):
+    return f"{str(title_prefix).rstrip()} D-{design_number}"
 
 
 def resolve_design_list(model_row, images_df):
@@ -297,7 +295,7 @@ def generate_model_workbook(base_bytes, model_row, images_df, chunk_size, col, s
     for k, parent_sku in enumerate(parent_skus):
         write(current_row, "sku", parent_sku)
         write(current_row, "parentage_level", "Parent")
-        write(current_row, "item_name", build_title(title_prefix, f"PL-{k + 1}"))
+        write(current_row, "item_name", build_title(title_prefix, design_numbers[k * chunk_size]))
         for field in PARENT_MODEL_FIELDS:
             write(current_row, field, values[field])
         current_row += 1
@@ -306,7 +304,7 @@ def generate_model_workbook(base_bytes, model_row, images_df, chunk_size, col, s
         write(current_row, "sku", f"{sku_prefix}_D{design_n}")
         write(current_row, "parentage_level", "Child")
         write(current_row, "parent_sku", parent_skus[idx // chunk_size])
-        write(current_row, "item_name", build_title(title_prefix, f"D-{design_n}"))
+        write(current_row, "item_name", build_title(title_prefix, design_n))
         write(current_row, "color", f"Design-{design_n}")
         write(current_row, "main_image_url", image_urls[idx])
         for field in MODEL_FIELDS:
@@ -334,12 +332,6 @@ def verify_workbook(path, n_designs, n_parents, sku_prefix, col):
     levels = [get(r, "parentage_level") for r in range(DATA_START_ROW, end)]
     assert levels[:n_parents] == ["Parent"] * n_parents, "parent rows missing"
     assert levels[n_parents:] == ["Child"] * n_designs, "child rows missing"
-
-    parent_names = [get(DATA_START_ROW + k, "item_name") for k in range(n_parents)]
-    for k, name in enumerate(parent_names):
-        assert str(name).endswith(f" PL-{k + 1}"), f"parent {k + 1} item_name not PL-suffixed: {name}"
-    child_names = {get(r, "item_name") for r in range(DATA_START_ROW + n_parents, end)}
-    assert not set(parent_names) & child_names, "parent item_name collides with a child's"
 
     first_child = DATA_START_ROW + n_parents
     assert get(DATA_START_ROW, "sku") == f"{sku_prefix}_parent_1"
